@@ -13,7 +13,7 @@ This module uses a more aggressive fan speed and therefore avoids overheating, a
 
 ## What is special about it?
 
-The only thing you have to do is select a GPU where you want the more aggressive fan speed. This could be for instance right before you start your Deep Learning pipeline. When the python interpreter exits, the fan speed regulation is automatically given back to the nvidia driver.
+You only have to add two to three lines to your main Deep Learning python script and then the fan speed is adjusted to keep GPU temperature at max 80° Celsius. When you Deep Learning pipeline exists, the control of the fann speed is automatically given back to the nvidia driver. Hence, fan speed is significantly reduced when finished to reduce noise.
 
 # How to use it?
 
@@ -31,7 +31,7 @@ $ nvidia-xconfig --enable-all-gpus --cool-bits=7 --connected-monitor=Monitor0 --
 *Warning: we used `--force-generate` flag. A backup of your previous config is saved and is reported as the result of running this function.*
 
 
-Aa manual configuration could  look likke this::
+Aa manual configuration could look likke this::
 
 ```shell
 $ cat /etc/X11/xorg.conf.d/nv.conf 
