@@ -24,17 +24,16 @@ Controlling nvidia gpu fan requires an `X` server to be running. To run `X` with
 
 Setup x config in a shell like below. You may need to use `sudo`.
 
-```
+```shell
 $ nvidia-xconfig --enable-all-gpus --cool-bits=7 --connected-monitor=Monitor0 --allow-empty-initial-configuration --force-generate
 ```
 
 *Warning: we used `--force-generate` flag. A backup of your previous config is saved and is reported as the result of running this function.*
 
 
-
 Aa manual configuration could  look likke this::
 
-```
+```shell
 $ cat /etc/X11/xorg.conf.d/nv.conf 
 # start
 
@@ -48,11 +47,13 @@ EndSection
 # trail
 ```
 
+See also https://wiki.archlinux.org/index.php/NVIDIA/Tips_and_tricks
+
 ## Run X
 
 I think the best way is to use xinit:
 
-```
+```shell
 $ xinit &
 ```
 
@@ -64,7 +65,7 @@ Please make sure `nvdia-smi` and `nvidia-settings` are installed. The latter usu
 
 ## Install nvfan
 
-```
+```shell
 $ pip install nvfan
 ```
 
@@ -72,8 +73,8 @@ $ pip install nvfan
 
 You can use command line script:
 
-```
-$ nvfan constant -g 0 -s 60
+```shell
+$ nvfan constant -g 0 -s 60  # sets a constant speed at 60%
 ```
 
 Or in your python script:
@@ -105,6 +106,41 @@ import nvfan
 
 gpu = gpufan.GPU(0, display=":1")  # or use default `None` for automatic lookup of display
 gpu.aggressive()
+```
+
+You can also omit the first parameter (`device`) like so:
+
+```python
+import nvfan
+
+gpu = gpufan.GPU()  # or use default `None` for automatic lookup of display
+gpu.aggressive()
+```
+
+Then all available GPUs are set to aggressive speed.
+
+## Decorators
+
+As another syntactic sugar you can annotate functions, which will set the constant/aggressive speed before calling the decorated method and as soon as it returns will give the control back to the nvidia driver:
+
+```python
+import time
+
+from nvfan.decorators import constant, aggressive
+
+@constant(percentage=95)
+def main():
+    time.sleep(60)
+
+
+@aggressive()
+def main_agg():
+    time.sleep(60)
+
+
+if __name__ == '__main__':
+    main()
+main_agg()
 ```
 
 ## Caution
