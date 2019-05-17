@@ -30,6 +30,24 @@ $ nvidia-xconfig --enable-all-gpus --cool-bits=7 --connected-monitor=Monitor0 --
 
 *Warning: we used `--force-generate` flag. A backup of your previous config is saved and is reported as the result of running this function.*
 
+
+
+Aa manual configuration could  look likke this::
+
+```
+$ cat /etc/X11/xorg.conf.d/nv.conf 
+# start
+
+Section "Device"
+    Identifier     "Device0"
+    Driver         "nvidia"
+    VendorName     "NVIDIA Corporation"
+    BoardName      "GeForce GTX 1080 Ti"
+    Option "Coolbits" "4"
+EndSection
+# trail
+```
+
 ## Run X
 
 I think the best way is to use xinit:
@@ -37,6 +55,8 @@ I think the best way is to use xinit:
 ```
 $ xinit &
 ```
+
+Leavve this sttep out if  you are  using a desktoop envirronment like Gnoome, KDE, or similar.
 
 ## Dependencies
 
