@@ -1,4 +1,4 @@
-from gpufan.curve import Curve
+from nvfan.curve import Curve
 import sure
 
 
