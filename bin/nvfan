@@ -2,7 +2,6 @@
 
 import sys
 import nvfan
-import signal
 import argparse
 
 
@@ -42,4 +41,6 @@ def main():
 
     nvfan._mp_p.join()
 
-main()
+
+if __name__ == '__main__':
+    main()

@@ -2,6 +2,8 @@
 
 import multiprocessing as mp
 from threading import Lock
+
+from nvfan import utils
 from .gpu import GPU
 import signal
 
@@ -21,7 +23,7 @@ def _get_device_id(device):
     try:
         import torch
         return device.index or torch.cuda.current_device().index
-    except AttributeError:
+    except (AttributeError, ImportError):
         return int(device)
 
 
@@ -89,11 +91,16 @@ def _start():
 
 
 def _send_task(task, device, *args, **kwargs):
-    device_id = _get_device_id(device)
-    _mp_q.put(Task(task, device_id, *args, **kwargs))
+    if device:
+        device_id = _get_device_id(device)
+        _mp_q.put(Task(task, device_id, *args, **kwargs))
+    else:
+        # use ALL gpus
+        for g in range(utils.query_number_gpus()):
+            _mp_q.put(Task(task, g, *args, **kwargs))
 
 
-def constant(device, percentage):
+def constant(percentage, device=None):
     """Set fan to a constant speed.
 
     Arguments
@@ -105,7 +112,7 @@ def constant(device, percentage):
     _send_task(CONSTANT_CONTROL, device, percentage)
 
 
-def aggressive(device):
+def aggressive(device=None):
     """Control fan in aggressive mode.
 
     In this mode, the fan is set to higher number comparing to
@@ -119,7 +126,7 @@ def aggressive(device):
     _send_task(AGGRESSIVE_CONTROL, device)
 
 
-def driver(device):
+def driver(device=None):
     """Put Nvidia driver back in charge to control fan speed.
 
     Arguments
