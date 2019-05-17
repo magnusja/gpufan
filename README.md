@@ -140,7 +140,7 @@ def main_agg():
 
 if __name__ == '__main__':
     main()
-main_agg()
+    main_agg()
 ```
 
 ## Caution
