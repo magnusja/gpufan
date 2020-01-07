@@ -75,7 +75,7 @@ class GPU(object):
 
         for i in range(self.fans_per_gpu):
             cmd.append(
-                "-a [fan:{0}]/GPUTargetFanSpeed={1}".format(self.id + i, speed))
+                "-a [fan:{0}]/GPUTargetFanSpeed={1}".format(self.fans_per_gpu * self.id + i, speed))
 
         # using sb.run(cmd, ...) did not work! I guess there is a conflict in -c switch.
         sb.run(" ".join(cmd), shell=True, stdout=sb.DEVNULL, stderr=sb.DEVNULL, check=self.check_exceptions)

@@ -11,7 +11,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='nvfan',
-    version='0.4.0',
+    version='0.4.1',
     url='https://github.com/magnusja/nvfan',
     description='Control Nvidia GPU fan in your python script.',
     long_description=long_description,
