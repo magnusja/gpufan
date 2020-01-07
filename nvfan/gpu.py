@@ -3,6 +3,7 @@
 A GPU representes an physical gpu based on its index in the list of
 available gpus.
 """
+
 import os
 from threading import Thread, Event
 
@@ -14,6 +15,14 @@ import atexit
 import logging
 
 logger = logging.getLogger(__name__)
+
+def _get_number_of_fans(display):
+    command = ["nvidia-settings", "-c", display, "-q", "fans"]
+    return str(sb.check_output(command)).count("[fan")
+
+def _get_number_of_gpus(display):
+    command = ["nvidia-settings", "-c", display, "-q", "gpus"]
+    return str(sb.check_output(command)).count("[gpu")
 
 
 class GPU(object):
@@ -34,6 +43,14 @@ class GPU(object):
         self._thread = None
 
         self.check_display()
+
+        # https://devtalk.nvidia.com/default/topic/1050731/nvidia-smi-get-number-of-fans-2070-has-two-separate-fan-0-and-fan-1-/?offset=5#5333459
+        # https://www.nvidia.com/en-us/geforce/forums/game-ready-drivers/13/298891/nvidia-smi-get-number-of-fans-2070-has-two/
+        self.fans_per_gpu = _get_number_of_fans(self.display) // _get_number_of_gpus(self.display)
+        if self.fans_per_gpu == 0:
+            # something went wrong with getting gpus or fans
+            self.fans_per_gpu = 1
+
         atexit.register(self.do_exit)
 
     def check_display(self):
@@ -54,8 +71,12 @@ class GPU(object):
                 "nvidia-settings",
                 "-c {0}".format(self.display),
                 "-a [gpu:{0}]/GPUFanControlState=1".format(self.id),
-                "-a [fan:{0}]/GPUTargetFanSpeed={1}".format(self.id, speed)
         ]
+
+        for i in range(self.fans_per_gpu):
+            cmd.append(
+                "-a [fan:{0}]/GPUTargetFanSpeed={1}".format(self.id + i, speed))
+
         # using sb.run(cmd, ...) did not work! I guess there is a conflict in -c switch.
         sb.run(" ".join(cmd), shell=True, stdout=sb.DEVNULL, stderr=sb.DEVNULL, check=self.check_exceptions)
     speed = property(None, speed)
