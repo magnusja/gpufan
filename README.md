@@ -168,13 +168,27 @@ ExecStop=/usr/bin/killall nvfan
 WantedBy=multi-user.target
 ```
 
+This runs an aggressive schedule for GPUs 0 to 3, adapt this to your needs.
+
 If you are running a desktop environment like Gnome or KDE:
 You need to adapt `Environment=XAUTHORITY=/run/user/121/gdm/Xauthority` to whatever the user id of your gdm or kdm user is.
 To do so run the following command:
 
 ```
-ps a |grep X
+ps a | grep X
 ```
+
+Then you can start the service:
+
+```systemctl start nvfan```
+
+Make sure it is running (consider using nvtop to check that fan speeds are actually affected):
+
+```ps a | grep nvfan```
+
+Then if everything works, enable the `nvfan.service` so it starts automatically at boot:
+
+```systemctl enable nvfan.service```
 
 ## Caution
 
