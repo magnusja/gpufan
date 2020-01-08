@@ -13,7 +13,7 @@ This module uses a more aggressive fan speed and therefore avoids overheating, a
 
 ## What is special about it?
 
-You only have to add two to three lines to your main Deep Learning python script and then the fan speed is adjusted to keep GPU temperature at max 80° Celsius. When you Deep Learning pipeline exists, the control of the fann speed is automatically given back to the nvidia driver. Hence, fan speed is significantly reduced when finished to reduce noise.
+You only have to add two to three lines to your main Deep Learning python script and then the fan speed is adjusted to keep GPU temperature at max 80° Celsius. When you Deep Learning pipeline exists, the control of the fann speed is automatically given back to the nvidia driver. Hence, fan speed is significantly reduced when finished to reduce noise. Another option is to start nvfan using systemd (see below).
 
 # How to use it?
 
@@ -31,7 +31,7 @@ $ nvidia-xconfig --enable-all-gpus --cool-bits=7 --connected-monitor=Monitor0 --
 *Warning: we used `--force-generate` flag. A backup of your previous config is saved and is reported as the result of running this function.*
 
 
-Aa manual configuration could look likke this::
+Aa manual configuration could look like this::
 
 ```shell
 $ cat /etc/X11/xorg.conf.d/nv.conf 
@@ -57,7 +57,7 @@ I think the best way is to use xinit:
 $ xinit &
 ```
 
-Leavve this sttep out if  you are  using a desktoop envirronment like Gnoome, KDE, or similar.
+Leave this step out if  you are  using a desktop environment like Gnoome, KDE, or similar.
 
 ## Dependencies
 
@@ -141,6 +141,38 @@ def main_agg():
 if __name__ == '__main__':
     main()
     main_agg()
+```
+
+## systemd service
+
+Create a new service file:
+```sudo vim /etc/systemd/system/nvfan.service```
+
+And paste the following content:
+
+```
+[Unit]
+Description=aggressive GPU fan speed
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=gdm
+Environment=XAUTHORITY=/run/user/121/gdm/Xauthority
+ExecStart=/usr/local/bin/nvfan -g 0 1 2 3 -- aggressive
+ExecStop=/usr/bin/killall nvfan
+
+[Install]
+WantedBy=multi-user.target
+```
+
+You need to adapt `Environment=XAUTHORITY=/run/user/121/gdm/Xauthority` to whatever the user id of your gdm or kdm user is.
+To do so run the following command:
+
+```
+ps a |grep X
 ```
 
 ## Caution
