@@ -168,6 +168,7 @@ ExecStop=/usr/bin/killall nvfan
 WantedBy=multi-user.target
 ```
 
+If you are running a desktop environment like Gnome or KDE:
 You need to adapt `Environment=XAUTHORITY=/run/user/121/gdm/Xauthority` to whatever the user id of your gdm or kdm user is.
 To do so run the following command:
 
