@@ -189,7 +189,3 @@ Make sure it is running (consider using nvtop to check that fan speeds are actua
 Then if everything works, enable the `nvfan.service` so it starts automatically at boot:
 
 ```systemctl enable nvfan.service```
-
-## Caution
-
-Use this module at your own risk. The author takes no responsibility and the scripts come with no warranty.
